@@ -9,12 +9,14 @@ public class AdvancedTeleOp extends OpMode {
 
     private DcMotor leftMotor;
     private DcMotor rightMotor;
+    private DcMotor turnMotor;
 
     @Override
     public void init() {
         // Initialize hardware
         leftMotor = hardwareMap.get(DcMotor.class, "left_drive");
         rightMotor = hardwareMap.get(DcMotor.class, "right_drive");
+        turnMotor = hardwareMap.get(DcMotor.class, "turn_drive");
     }
 
     @Override
@@ -32,10 +34,12 @@ public class AdvancedTeleOp extends OpMode {
             // Set motor power
             leftMotor.setPower(output.leftMotor);
             rightMotor.setPower(output.rightMotor);
+            turnMotor.setTargetPosition((int) output.turnAngle);
 
             // Telemetry data for debugging
             telemetry.addData("Left Motor Power", output.leftMotor);
             telemetry.addData("Right Motor Power", output.rightMotor);
+            telemetry.addData("Turn Motor Position", output.turnAngle);
         }
         telemetry.update();
     }
@@ -54,7 +58,7 @@ public class AdvancedTeleOp extends OpMode {
 
         output.isValid = true;
         double speed = rt - lt;
-        output.turnAngle = joy_axis * Math.abs(joy_axis) * turn_angle;
+        output.turnAngle = (int) (joy_axis * Math.abs(joy_axis) * turn_angle);
         double l_motor = -speed - joy_axis / diff_str;
         double r_motor = speed + joy_axis / diff_str;
 
