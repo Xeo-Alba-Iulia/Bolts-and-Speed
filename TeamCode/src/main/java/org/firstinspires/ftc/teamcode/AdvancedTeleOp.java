@@ -70,7 +70,7 @@ public class AdvancedTeleOp extends OpMode {
 
     private static class MovementOutput {
         boolean isValid;
-        double turnAngle;
+        int turnAngle;
         double leftMotor;
         double rightMotor;
     }
