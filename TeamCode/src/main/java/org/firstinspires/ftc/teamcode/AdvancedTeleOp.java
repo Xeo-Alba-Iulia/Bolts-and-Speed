@@ -10,6 +10,7 @@ public class AdvancedTeleOp extends OpMode {
     private DcMotor leftMotor;
     private DcMotor rightMotor;
     private DcMotor turnMotor;
+    private DcMotor clawMotor;
 
     @Override
     public void init() {
@@ -17,6 +18,7 @@ public class AdvancedTeleOp extends OpMode {
         leftMotor = hardwareMap.get(DcMotor.class, "left_drive");
         rightMotor = hardwareMap.get(DcMotor.class, "right_drive");
         turnMotor = hardwareMap.get(DcMotor.class, "turn_drive");
+        clawMotor = hardwareMap.get(DcMotor.class, "claw_drive");
     }
 
     @Override
@@ -24,13 +26,17 @@ public class AdvancedTeleOp extends OpMode {
         double lt = gamepad1.left_trigger;
         double rt = gamepad1.right_trigger;
         double joy_axis = gamepad1.left_stick_x;
+        boolean claw = gamepad1.circle;
+        boolean hand_break = gamepad1.square;
 
         // Call the movement logic function
         MovementOutput output = movementLogic(lt, rt, joy_axis);
 
         if (!output.isValid) {
             telemetry.addData("Error", "Invalid inputs");
-        } else {
+        } else if (!hand_break){
+            leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             // Set motor power
             leftMotor.setPower(output.leftMotor);
             rightMotor.setPower(output.rightMotor);
@@ -41,7 +47,19 @@ public class AdvancedTeleOp extends OpMode {
             telemetry.addData("Right Motor Power", output.rightMotor);
             telemetry.addData("Turn Motor Position", output.turnAngle);
         }
+        else {
+            leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            leftMotor.setPower(0);
+            rightMotor.setPower(0);
+        }
         telemetry.update();
+        if (claw) {
+            clawMotor.setTargetPosition(150);
+        }
+        else {
+            clawMotor.setTargetPosition(0);
+        }
     }
 
     private MovementOutput movementLogic(double lt, double rt, double joy_axis) {
@@ -59,8 +77,8 @@ public class AdvancedTeleOp extends OpMode {
         output.isValid = true;
         double speed = rt - lt;
         output.turnAngle = (int) (joy_axis * Math.abs(joy_axis) * turn_angle * 1.5);
-        double l_motor = (speed + joy_axis / diff_str) * max_voltage;
-        double r_motor = (speed - joy_axis / diff_str) * max_voltage;
+        double l_motor = speed * max_voltage;
+        double r_motor = speed * max_voltage;
 
         output.leftMotor = Math.max(-max_voltage, Math.min(l_motor, max_voltage));
         output.rightMotor = Math.max(-max_voltage, Math.min(r_motor, max_voltage));
