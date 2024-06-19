@@ -23,6 +23,9 @@ public class AdvancedTeleOp extends OpMode {
 
         turnMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turnMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     @Override
@@ -43,22 +46,24 @@ public class AdvancedTeleOp extends OpMode {
             rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             // Set motor power
             leftMotor.setPower(output.leftMotor);
+            rightMotor.setPower(output.rightMotor);
             turnMotor.setTargetPosition(output.turnAngle);
             turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            turnMotor.setPower(1);
+            turnMotor.setPower(-1);
 
 
             // Telemetry data for debugging
             telemetry.addData("Left Motor Power", output.leftMotor);
             telemetry.addData("Right Motor Power", output.rightMotor);
             telemetry.addData("Turn Motor Position", output.turnAngle);
-            telemetry.addData("Initial turn angle position:", turnMotor.getCurrentPosition());
+            telemetry.addData("Real turn angle position:", turnMotor.getCurrentPosition());
         }
         else {
             leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            rightMotor.setTargetPosition(rightMotor.getCurrentPosition());
+            rightMotor.setPower(1);
             leftMotor.setPower(0);
-            rightMotor.setPower(0);
         }
         telemetry.update();
         if (claw) {
