@@ -20,6 +20,9 @@ public class AdvancedTeleOp extends OpMode {
         rightMotor = hardwareMap.get(DcMotor.class, "right_drive");
         turnMotor = hardwareMap.get(DcMotor.class, "turn_drive");
         clawMotor = hardwareMap.get(Servo.class, "claw_drive");
+
+        turnMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turnMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     @Override
@@ -40,13 +43,10 @@ public class AdvancedTeleOp extends OpMode {
             rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             // Set motor power
             leftMotor.setPower(output.leftMotor);
-            rightMotor.setPower(output.rightMotor);
             turnMotor.setTargetPosition(output.turnAngle);
-
-            turnMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            turnMotor.setPower(1);
 
-            turnMotor.setPower(0.5);
 
             // Telemetry data for debugging
             telemetry.addData("Left Motor Power", output.leftMotor);
@@ -72,7 +72,7 @@ public class AdvancedTeleOp extends OpMode {
     private MovementOutput movementLogic(double lt, double rt, double joy_axis) {
         MovementOutput output = new MovementOutput();
 
-        double turn_angle = 30;
+        double turn_angle = 70;
         double max_voltage = 1.0;
         double diff_str = 3;
 
@@ -83,7 +83,7 @@ public class AdvancedTeleOp extends OpMode {
 
         output.isValid = true;
         double speed = rt - lt;
-        output.turnAngle = (int) (joy_axis * Math.abs(joy_axis) * turn_angle * 1.5);
+        output.turnAngle = (int) (joy_axis * Math.abs(joy_axis) * turn_angle);
         double l_motor = - speed * max_voltage;
         double r_motor = - speed * max_voltage;
 
