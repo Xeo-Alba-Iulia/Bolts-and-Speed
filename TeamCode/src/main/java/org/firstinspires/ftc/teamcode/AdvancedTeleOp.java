@@ -43,6 +43,7 @@ public class AdvancedTeleOp extends OpMode {
             rightMotor.setPower(output.rightMotor);
             turnMotor.setTargetPosition(output.turnAngle);
 
+            turnMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // Telemetry data for debugging
