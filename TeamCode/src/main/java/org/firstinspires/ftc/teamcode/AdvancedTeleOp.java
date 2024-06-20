@@ -26,6 +26,9 @@ public class AdvancedTeleOp extends OpMode {
 
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 
     @Override
@@ -42,8 +45,6 @@ public class AdvancedTeleOp extends OpMode {
         if (!output.isValid) {
             telemetry.addData("Error", "Invalid inputs");
         } else if (!hand_break){
-            leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             // Set motor power
             leftMotor.setPower(output.leftMotor);
             rightMotor.setPower(output.rightMotor);
@@ -57,20 +58,21 @@ public class AdvancedTeleOp extends OpMode {
             telemetry.addData("Right Motor Power", output.rightMotor);
             telemetry.addData("Turn Motor Position", output.turnAngle);
             telemetry.addData("Real turn angle position:", turnMotor.getCurrentPosition());
+            telemetry.addData("Servo position", clawMotor.getPosition());
         }
         else {
             leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             rightMotor.setTargetPosition(rightMotor.getCurrentPosition());
-            rightMotor.setPower(1);
+            rightMotor.setPower(-1);
             leftMotor.setPower(0);
         }
         telemetry.update();
         if (claw) {
-            clawMotor.setPosition(150);
+            clawMotor.setPosition(0.0);
         }
         else {
-            clawMotor.setPosition(0);
+            clawMotor.setPosition(1.0);
         }
     }
 
@@ -89,8 +91,8 @@ public class AdvancedTeleOp extends OpMode {
         output.isValid = true;
         double speed = rt - lt;
         output.turnAngle = (int) (joy_axis * Math.abs(joy_axis) * turn_angle);
-        double l_motor = - speed * max_voltage;
-        double r_motor = - speed * max_voltage;
+        double l_motor =  speed * max_voltage;
+        double r_motor =  speed * max_voltage;
 
         output.leftMotor = Math.max(-max_voltage, Math.min(l_motor, max_voltage));
         output.rightMotor = Math.max(-max_voltage, Math.min(r_motor, max_voltage));
