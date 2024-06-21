@@ -48,9 +48,12 @@ public class AdvancedTeleOp extends OpMode {
             // Set motor power
             leftMotor.setPower(output.leftMotor);
             rightMotor.setPower(output.rightMotor);
-            turnMotor.setTargetPosition(output.turnAngle);
-            turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            turnMotor.setPower(-1);
+            int currentPos = turnMotor.getCurrentPosition();
+            if (Math.abs(currentPos - output.turnAngle) > 5) { // Adjust the threshold as needed
+                turnMotor.setPower(currentPos < output.turnAngle ? 1.0 : -1.0);
+            } else {
+                turnMotor.setPower(0);
+            }
 
 
             // Telemetry data for debugging
@@ -90,7 +93,7 @@ public class AdvancedTeleOp extends OpMode {
 
         output.isValid = true;
         double speed = rt - lt;
-        output.turnAngle = (int) (joy_axis * Math.abs(joy_axis) * turn_angle);
+        output.turnAngle = (int) (joy_axis * Math.abs(joy_axis) * -turn_angle);
         double l_motor =  speed * max_voltage;
         double r_motor =  speed * max_voltage;
 
