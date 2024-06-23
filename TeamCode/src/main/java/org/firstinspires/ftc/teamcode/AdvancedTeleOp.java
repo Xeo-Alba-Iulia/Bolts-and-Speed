@@ -13,6 +13,9 @@ public class AdvancedTeleOp extends OpMode {
     private DcMotor turnMotor;
     private Servo clawMotor;
 
+    private int enter = 0;
+    private int targetBreak = 0;
+
     @Override
     public void init() {
         // Initialize hardware
@@ -48,10 +51,18 @@ public class AdvancedTeleOp extends OpMode {
             // Set motor power
             leftMotor.setPower(output.leftMotor);
             rightMotor.setPower(output.rightMotor);
-            turnMotor.setTargetPosition(output.turnAngle);
+
+            int targetTurn = output.turnAngle;
+            turnMotor.setTargetPosition(targetTurn * (Math.abs(targetTurn) + 15) / Math.abs(targetTurn));
             turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             turnMotor.setPower(-1);
+            if (turnMotor.getCurrentPosition() > targetTurn * (Math.abs(targetTurn) - 3) / Math.abs(targetTurn)) {
+                turnMotor.setTargetPosition(targetTurn);
+                turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                turnMotor.setPower(-1);
+            }
 
+            enter = 0;
 
             // Telemetry data for debugging
             telemetry.addData("Left Motor Power", output.leftMotor);
@@ -63,9 +74,18 @@ public class AdvancedTeleOp extends OpMode {
         else {
             leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            rightMotor.setTargetPosition(rightMotor.getCurrentPosition());
-            rightMotor.setPower(-1);
             leftMotor.setPower(0);
+
+            if (enter > 0) {
+                rightMotor.setTargetPosition(targetBreak);
+                rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                rightMotor.setPower(1.0);
+            }
+            else {
+                targetBreak = rightMotor.getCurrentPosition();
+            }
+
+            enter ++;
         }
         telemetry.update();
         if (claw) {
@@ -90,7 +110,7 @@ public class AdvancedTeleOp extends OpMode {
 
         output.isValid = true;
         double speed = rt - lt;
-        output.turnAngle = (int) (joy_axis * Math.abs(joy_axis) * turn_angle);
+        output.turnAngle = (int) (joy_axis * turn_angle);
         double l_motor =  speed * max_voltage;
         double r_motor =  speed * max_voltage;
 
