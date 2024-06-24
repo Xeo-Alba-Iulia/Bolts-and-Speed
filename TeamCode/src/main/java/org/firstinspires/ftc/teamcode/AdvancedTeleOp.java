@@ -53,7 +53,7 @@ public class AdvancedTeleOp extends OpMode {
             rightMotor.setPower(output.rightMotor);
 
             int targetTurn = output.turnAngle;
-            turnMotor.setTargetPosition(targetTurn * (Math.abs(targetTurn) + 15) / Math.abs(targetTurn));
+            turnMotor.setTargetPosition(targetTurn * (Math.abs(targetTurn) + 15) * Math.abs(targetTurn) / (int) (Math.pow(Math.max(Math.abs(targetTurn), 1), 2)));
             turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             turnMotor.setPower(-1);
             if (turnMotor.getCurrentPosition() > targetTurn * (Math.abs(targetTurn) - 3) / Math.abs(targetTurn)) {
