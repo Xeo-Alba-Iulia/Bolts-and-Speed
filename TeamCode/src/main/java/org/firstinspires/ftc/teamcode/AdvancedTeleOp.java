@@ -109,10 +109,8 @@ public class AdvancedTeleOp extends OpMode {
         MovementOutput output = new MovementOutput();
 
         double turn_angle = 70;
-        double max_voltage = 1.0;
-        double diff_str = 3;
 
-        if (!(lt >= -1.1 && lt <= 1.1 && rt >= -1.1 && rt <= 1.1 && joy_axis >= -1.1 && joy_axis <= 1.1)) {
+        if (!(lt >= -1 && lt <= 1 && rt >= -1 && rt <= 1 && joy_axis >= -1 && joy_axis <= 1)) {
             output.isValid = false;
             return output;
         }
@@ -120,11 +118,11 @@ public class AdvancedTeleOp extends OpMode {
         output.isValid = true;
         double speed = rt - lt;
         output.turnAngle = (int) (joy_axis * turn_angle);
-        double l_motor =  speed * max_voltage;
-        double r_motor =  speed * max_voltage;
+        double l_motor =  speed * 1;
+        double r_motor =  speed * 1;
 
-        output.leftMotor = Math.max(-max_voltage, Math.min(l_motor, max_voltage));
-        output.rightMotor = Math.max(-max_voltage, Math.min(r_motor, max_voltage));
+        output.leftMotor = Math.max(-1, Math.min(l_motor, 1));
+        output.rightMotor = Math.max(-1, Math.min(r_motor, 1));
 
         return output;
     }
