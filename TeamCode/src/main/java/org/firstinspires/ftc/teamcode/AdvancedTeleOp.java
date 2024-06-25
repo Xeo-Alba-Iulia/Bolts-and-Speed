@@ -53,14 +53,14 @@ public class AdvancedTeleOp extends OpMode {
             rightMotor.setPower(output.rightMotor);
 
             int targetTurn = output.turnAngle;
-            int coeff = Math.abs(targetTurn) / (int) Math.pow(Math.max(Math.abs(targetTurn), 1), 2);
-            turnMotor.setTargetPosition(targetTurn * (Math.abs(targetTurn) + 15) * coeff);
+            int coeff = targetTurn / Math.max(Math.abs(targetTurn), 1);
+            turnMotor.setTargetPosition((Math.abs(targetTurn) + 15) * coeff);
             turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            turnMotor.setPower(-1);
-            if (turnMotor.getCurrentPosition() > targetTurn * (Math.abs(targetTurn) - 3) * coeff) {
+            turnMotor.setPower(1);
+            if (Math.abs(turnMotor.getCurrentPosition()) > (Math.abs(targetTurn) - 3)) {
                 turnMotor.setTargetPosition(targetTurn);
                 turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                turnMotor.setPower(-1);
+                turnMotor.setPower(1);
             }
 
             enter = 0;
@@ -90,7 +90,7 @@ public class AdvancedTeleOp extends OpMode {
         }
         telemetry.update();
         if (claw) {
-            clawMotor.setPosition(0.5);
+            clawMotor.setPosition(0.35);
         }
         else {
             clawMotor.setPosition(1.0);
