@@ -54,22 +54,15 @@ public class AdvancedTeleOp extends OpMode {
 
             int targetTurn = output.turnAngle;
             int currentTurn = turnMotor.getCurrentPosition();
-            if (currentTurn - 10 < targetTurn && targetTurn < currentTurn + 10) {
-                turnMotor.setTargetPosition(targetTurn);
-                turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                turnMotor.setPower(1);
-            }
-            else {
-                int coeff = targetTurn / Math.max(Math.abs(targetTurn), 1);
-                turnMotor.setTargetPosition((Math.abs(targetTurn) + 15) * coeff);
-                turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                turnMotor.setPower(1);
-                if (Math.abs(currentTurn) > (Math.abs(targetTurn) - 3)) {
-                    turnMotor.setTargetPosition(targetTurn);
-                    turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    turnMotor.setPower(1);
-                }
-            }
+            int coeff = targetTurn / Math.max(Math.abs(targetTurn), 1);
+            turnMotor.setTargetPosition(targetTurn);  //(Math.abs(targetTurn) + 50) * coeff);
+            turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            turnMotor.setPower(1);
+//            if (Math.abs(currentTurn) > (Math.abs(targetTurn) - 30)) {
+//                turnMotor.setTargetPosition(targetTurn);
+//                turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                turnMotor.setPower(0.2);
+//            }
 
             enter = 0;
 
@@ -98,7 +91,7 @@ public class AdvancedTeleOp extends OpMode {
         }
         telemetry.update();
         if (claw) {
-            clawMotor.setPosition(0.35);
+            clawMotor.setPosition(0.4);
         }
         else {
             clawMotor.setPosition(1.0);
@@ -108,7 +101,14 @@ public class AdvancedTeleOp extends OpMode {
     private MovementOutput movementLogic(double lt, double rt, double joy_axis) {
         MovementOutput output = new MovementOutput();
 
-        double turn_angle = 70;
+        double max_angle;
+
+        if (gamepad1.triangle) {
+            max_angle = 450;
+        }
+        else {
+            max_angle = 300;
+        }
 
         if (!(lt >= -1 && lt <= 1 && rt >= -1 && rt <= 1 && joy_axis >= -1 && joy_axis <= 1)) {
             output.isValid = false;
@@ -117,9 +117,9 @@ public class AdvancedTeleOp extends OpMode {
 
         output.isValid = true;
         double speed = rt - lt;
-        output.turnAngle = (int) (joy_axis * turn_angle);
-        double l_motor =  speed * 1;
-        double r_motor =  speed * 1;
+        output.turnAngle = (int) (joy_axis * -max_angle);
+        double l_motor =  speed * -1;
+        double r_motor =  speed * -1;
 
         output.leftMotor = Math.max(-1, Math.min(l_motor, 1));
         output.rightMotor = Math.max(-1, Math.min(r_motor, 1));
