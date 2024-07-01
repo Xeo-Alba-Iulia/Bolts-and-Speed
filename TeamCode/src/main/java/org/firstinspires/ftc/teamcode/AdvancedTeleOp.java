@@ -16,6 +16,9 @@ public class AdvancedTeleOp extends OpMode {
     private int enter = 0;
     private int targetBreak = 0;
 
+    private int previousEncoderPosition;
+    private long previousTime;
+
     @Override
     public void init() {
         // Initialize hardware
@@ -32,6 +35,9 @@ public class AdvancedTeleOp extends OpMode {
 
         leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        previousEncoderPosition = turnMotor.getCurrentPosition();
+        previousTime = System.currentTimeMillis();
     }
 
     @Override
@@ -48,6 +54,8 @@ public class AdvancedTeleOp extends OpMode {
         if (!output.isValid) {
             telemetry.addData("Error", "Invalid inputs");
         } else if (!hand_break){
+            rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             // Set motor power
             leftMotor.setPower(output.leftMotor);
             rightMotor.setPower(output.rightMotor);
@@ -57,12 +65,7 @@ public class AdvancedTeleOp extends OpMode {
             int coeff = targetTurn / Math.max(Math.abs(targetTurn), 1);
             turnMotor.setTargetPosition(targetTurn);  //(Math.abs(targetTurn) + 50) * coeff);
             turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            turnMotor.setPower(1);
-//            if (Math.abs(currentTurn) > (Math.abs(targetTurn) - 30)) {
-//                turnMotor.setTargetPosition(targetTurn);
-//                turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//                turnMotor.setPower(0.2);
-//            }
+            turnMotor.setPower(1.0);
 
             enter = 0;
 
@@ -70,10 +73,15 @@ public class AdvancedTeleOp extends OpMode {
             telemetry.addData("Left Motor Power", output.leftMotor);
             telemetry.addData("Right Motor Power", output.rightMotor);
             telemetry.addData("Turn Motor Position", output.turnAngle);
-            telemetry.addData("Real turn angle position:", turnMotor.getCurrentPosition());
-            telemetry.addData("Servo position", clawMotor.getPosition());
+            telemetry.addData("Real turn angle positio n:", turnMotor.getCurrentPosition());
+            double turnMotorSpeed = getMotorSpeed(rightMotor);
+            telemetry.addData("Right Motor Speed", turnMotorSpeed);
+            telemetry.addData("x", gamepad1.cross);
         }
         else {
+            leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
             leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             leftMotor.setPower(0);
@@ -98,12 +106,29 @@ public class AdvancedTeleOp extends OpMode {
         }
     }
 
+    private double getMotorSpeed(DcMotor motor) {
+        int currentEncoderPosition = motor.getCurrentPosition();
+        long currentTime = System.currentTimeMillis();
+
+        int positionDifference = currentEncoderPosition - previousEncoderPosition;
+        long timeDifference = currentTime - previousTime;
+
+        // Update previous values
+        previousEncoderPosition = currentEncoderPosition;
+        previousTime = currentTime;
+
+        // Calculate speed in encoder ticks per second
+        double speed = (positionDifference / (double) timeDifference);
+
+        return speed;
+    }
+
     private MovementOutput movementLogic(double lt, double rt, double joy_axis) {
         MovementOutput output = new MovementOutput();
 
         double max_angle;
 
-        if (gamepad1.triangle) {
+        if (gamepad1.cross) {
             max_angle = 450;
         }
         else {
