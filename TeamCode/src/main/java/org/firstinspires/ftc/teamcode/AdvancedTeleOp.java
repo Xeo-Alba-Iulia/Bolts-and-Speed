@@ -61,8 +61,8 @@ public class AdvancedTeleOp extends OpMode {
             rightMotor.setPower(output.rightMotor);
 
             int targetTurn = output.turnAngle;
-            int currentTurn = turnMotor.getCurrentPosition();
-            int coeff = targetTurn / Math.max(Math.abs(targetTurn), 1);
+            //int currentTurn = turnMotor.getCurrentPosition();
+            //int coeff = targetTurn / Math.max(Math.abs(targetTurn), 1);
             turnMotor.setTargetPosition(targetTurn);  //(Math.abs(targetTurn) + 50) * coeff);
             turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             turnMotor.setPower(1.0);
@@ -117,10 +117,7 @@ public class AdvancedTeleOp extends OpMode {
         previousEncoderPosition = currentEncoderPosition;
         previousTime = currentTime;
 
-        // Calculate speed in encoder ticks per second
-        double speed = (positionDifference / (double) timeDifference);
-
-        return speed;
+        return positionDifference / (double) timeDifference;
     }
 
     private MovementOutput movementLogic(double lt, double rt, double joy_axis) {
