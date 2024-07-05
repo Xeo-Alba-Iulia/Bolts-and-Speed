@@ -70,8 +70,8 @@ public class AdvancedTeleOp extends OpMode {
             enter = 0;
 
             // Telemetry data for debugging
-            telemetry.addData("Left Motor Power", output.leftMotor);
-            telemetry.addData("Right Motor Power", output.rightMotor);
+            telemetry.addData("Left Motor Power", leftMotor.getPower());
+            telemetry.addData("Right Motor Power", rightMotor.getPower());
             telemetry.addData("Turn Motor Position", output.turnAngle);
             telemetry.addData("Real turn angle positio n:", turnMotor.getCurrentPosition());
             double turnMotorSpeed = getMotorSpeed(rightMotor);
@@ -86,10 +86,23 @@ public class AdvancedTeleOp extends OpMode {
             rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             leftMotor.setPower(0);
 
+            telemetry.addData("Left Motor Power", leftMotor.getPower());
+            telemetry.addData("Right Motor Power", rightMotor.getPower());
+            telemetry.addData("Turn Motor Position", output.turnAngle);
+            telemetry.addData("Real turn angle positio n:", turnMotor.getCurrentPosition());
+            double turnMotorSpeed = getMotorSpeed(rightMotor);
+            telemetry.addData("Right Motor Speed", turnMotorSpeed);
+            telemetry.addData("x", gamepad1.cross);
+
             if (enter > 0) {
                 rightMotor.setTargetPosition(targetBreak);
                 rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                rightMotor.setPower(1.0);
+                if (Math.abs(rightMotor.getCurrentPosition()) - 50 > Math.abs(targetBreak)) {
+                    rightMotor.setPower(0.69);
+                }
+                else {
+                    rightMotor.setPower(0.15);
+                }
             }
             else {
                 targetBreak = rightMotor.getCurrentPosition();
