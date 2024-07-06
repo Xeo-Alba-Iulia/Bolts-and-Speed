@@ -21,7 +21,7 @@ public class AdvancedTeleOp extends OpMode {
     private int previousEncoderPosition;
     private long previousTime;
 
-//    private boolean StrngCalEnter = false;
+    private boolean StrngCalEnter = false;
 
     @Override
     public void init() {
@@ -46,35 +46,35 @@ public class AdvancedTeleOp extends OpMode {
 
     @Override
     public void loop() {
-//        if (!StrngCalEnter){
-//            turnMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//            turnMotor.setPower(0.5);
-//            telemetry.addData("Calibrating...", 1);
-//            telemetry.update();
-//            try {
-//                sleep(2000);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//            telemetry.addData("Current position", turnMotor.getCurrentPosition());
-//            telemetry.update();
-//            turnMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            turnMotor.setTargetPosition(turnMotor.getCurrentPosition() - 700);  //(Math.abs(targetTurn) + 50) * coeff);
-//            turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            turnMotor.setPower(1.0);
-//
-//            try {
-//                sleep(1500);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//
-//            turnMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            turnMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//
-//            StrngCalEnter = true;
-//        }
-//        else {
+        if (!StrngCalEnter){
+            turnMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            turnMotor.setPower(0.25);
+            telemetry.addData("Calibrating...", 1);
+            telemetry.update();
+            try {
+                sleep(2000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            telemetry.addData("Current position", turnMotor.getCurrentPosition());
+            telemetry.update();
+            turnMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            turnMotor.setTargetPosition(turnMotor.getCurrentPosition() - 650);  //(Math.abs(targetTurn) + 50) * coeff);
+            turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            turnMotor.setPower(1.0);
+
+            try {
+                sleep(1500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            turnMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            turnMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            StrngCalEnter = true;
+        }
+        else {
             double lt = gamepad1.left_trigger;
             double rt = gamepad1.right_trigger;
             double joy_axis = gamepad1.left_stick_x;
@@ -145,7 +145,7 @@ public class AdvancedTeleOp extends OpMode {
             } else {
                 clawMotor.setPosition(1.0);
             }
-//        }
+        }
     }
 
     private double getMotorSpeed(DcMotor motor) {
